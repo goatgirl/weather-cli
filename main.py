@@ -1,38 +1,50 @@
-# enc_url = 'https://maps.googleapis.com/maps/api/geocode/json?address=huddersfield%20west%20yorkshire'
-
 import requests
 from urllib.parse import quote
-
-import settings
+from settings import config
 
 
 def geocode(location):
-    url = 'https://maps.googleapis.com/maps/api/geocode/json?address={}'
-    enc_url = url.format(quote(location))
-    return requests.get(enc_url).json()
+    try:
+        url = config['location-url'].format(loc=location)
+        enc_url = url.format(quote(location))
+        res = requests.get(enc_url).json()
+        if res['status'] == 'ZERO_RESULTS':
+            print('Address not found')
+        else:
+            return res['results'][0]
+
+    except Exception:
+        print('Unable to connect to server')
 
 
 def weather(latitude, longitude):
-    url = settings.weather['url'].format(
-        key=settings.weather['key'],
+    url = config['weather-url'].format(
+        key=config['weather-key'],
         lat=latitude,
         lng=longitude
     )
+
     return requests.get(url).json()
 
 
-def f2c(f):
+def celcius(f):
     return int((f - 32) * 5 / 9)
 
 
-geo = geocode('hebdon bridge west yorkshire')
+def main():
+    geo = geocode('90210')
+    if not geo:
+        return
 
-lat = geo['results'][0]['geometry']['location']['lat']
-lng = geo['results'][0]['geometry']['location']['lng']
+    lat = geo['geometry']['location']['lat']
+    lng = geo['geometry']['location']['lng']
 
-data = weather(lat, lng)
+    data = weather(lat, lng)
 
-print('Address:', geo['results'][0]['formatted_address'])
-print('Summary:', data['currently']['summary'])
-print('Temperature: {}\xb0C'.format(f2c(data['currently']['temperature'])))
-print('Feels like: {}\xb0C'.format(f2c(data['currently']['apparentTemperature'])))
+    print('Address:', geo['formatted_address'])
+    print('Weather:', data['currently']['summary'])
+    print('Temperature: {}\xb0C'.format(celcius(data['currently']['temperature'])))
+
+
+if __name__ == '__main__':
+    main()
