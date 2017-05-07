@@ -6,17 +6,27 @@ from urllib.parse import quote
 from settings import config
 
 
-def geocode(location):
+def url_safe(str):
+    str = str.replace(',', ' ').replace('  ', ' ')
+    return quote(str)
+
+
+def fetch_data(url):
     try:
-        url = config['location-url'].format(loc=location)
-        enc_url = url.format(quote(location))
-        res = requests.get(enc_url).json()
-        if res['status'] == 'ZERO_RESULTS':
-            print('Address not found')
-        else:
-            return res['results'][0]
-    except Exception:
+        response = requests.get(url)
+        return response.json()
+    except Exception as e:
         print('Unable to connect to server')
+        print(e)
+
+
+def geocode(location):
+    url = config['location-url'].format(loc=url_safe(location))
+    data = fetch_data(url)
+    if data['status'] == 'ZERO_RESULTS':
+        print('Address not found')
+    else:
+        return data['results'][0]
 
 
 def weather(latitude, longitude):
@@ -25,7 +35,7 @@ def weather(latitude, longitude):
         lat=latitude,
         lng=longitude
     )
-    return requests.get(url).json()
+    return fetch_data(url)
 
 
 def parse_address(address):
@@ -107,10 +117,10 @@ def main():
     data = weather(lat, lng)
 
     print()
-    print('Location :', geo['formatted_address'])
-    print('Weather  :', data['currently']['summary'])
+    print('Location : {}'.format(geo['formatted_address']))
+    print('Weather  : {}'.format(data['currently']['summary']))
     print('Currently: {}\xb0C'.format(int(data['currently']['temperature'])))
-    print('Forecast :', data['daily']['summary'])
+    print('Forecast : {}'.format(data['daily']['summary']))
 
 
 if __name__ == '__main__':
