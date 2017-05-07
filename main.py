@@ -1,5 +1,7 @@
 import argparse
 import requests
+import os.path
+
 from urllib.parse import quote
 from settings import config
 
@@ -34,12 +36,14 @@ def parse_address(address):
 
 
 def set_default(location):
-    with open("weather.sav", 'w') as f:
+    with open(config['save-file'], 'w') as f:
         f.write(str(location))
 
 
 def get_default():
-    with open("weather.sav", 'r') as f:
+    if not os.path.exists(config['save-file']):
+        return
+    with open(config['save-file'], 'r') as f:
         loc = f.read()
     return loc
 
@@ -50,15 +54,23 @@ def main():
                         help="The address, city or post code for the weather.",
                         nargs='*', type=str)
 
-    parser.add_argument("-d", "--default",
-                        help="Sets the  location as the default location and exits",
+    parser.add_argument("-l", "--list",
+                        help="displays the default location",
                         action="store_true")
 
-    parser.add_argument("-s", "--set",
-                        help="Sets the  location as the default location and fetches weather",
+    parser.add_argument("-d", "--default",
+                        help="saves location as the default and exits",
+                        action="store_true")
+
+    parser.add_argument("-s", "--save",
+                        help="saves location as the default and fetches weather",
                         action="store_true")
 
     args = parser.parse_args()
+
+    if args.list:
+        print('Default location: {}'.format(get_default()))
+        return
 
     if args.address:
         address = parse_address(args.address)
@@ -66,7 +78,7 @@ def main():
         address = get_default()
 
     if not address:
-        print("No default location set.\nPlease run again and include an address.")
+        print("No default location set.\nPlease run again and include a location.")
         return
 
     geo = geocode(address)
@@ -74,13 +86,20 @@ def main():
         return
 
     if args.default:
-        set_default(geo['formatted_address'])
-        print('Setting {} as default location'.format(geo['formatted_address']))
+        if args.address:
+            set_default(geo['formatted_address'])
+            print('Setting {} as default location'.format(geo['formatted_address']))
+        else:
+            print('No location specified')
         return
 
-    if args.set:
-        set_default(geo['formatted_address'])
-        print('Setting {} as default location'.format(geo['formatted_address']))
+    if args.save:
+        if args.address:
+            set_default(geo['formatted_address'])
+            print('Saving {} as default location'.format(geo['formatted_address']))
+        else:
+            print('No location specified')
+            return
 
     lat = geo['geometry']['location']['lat']
     lng = geo['geometry']['location']['lng']
