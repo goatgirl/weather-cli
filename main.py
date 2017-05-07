@@ -58,7 +58,7 @@ def get_default():
     return loc
 
 
-def main():
+def set_parse():
     parser = argparse.ArgumentParser()
     parser.add_argument("address",
                         help="The address, city or post code for the weather.",
@@ -76,7 +76,20 @@ def main():
                         help="saves location as the default and fetches weather",
                         action="store_true")
 
-    args = parser.parse_args()
+    return parser.parse_args()
+
+
+def show(location, data):
+    print()
+    print('Location : {}'.format(location['formatted_address']))
+    print('Weather  : {}'.format(data['currently']['summary']))
+    print('Currently: {}\xb0C'.format(int(data['currently']['temperature'])))
+    print('Forecast : {}'.format(data['daily']['summary']))
+
+
+def main():
+
+    args = set_parse()
 
     if args.list:
         print('Default location: {}'.format(get_default()))
@@ -86,7 +99,6 @@ def main():
         address = parse_address(args.address)
     else:
         address = get_default()
-
     if not address:
         print("No default location set.\nPlease run again and include a location.")
         return
@@ -95,6 +107,7 @@ def main():
     if not geo:
         return
 
+    # args that need valid data
     if args.default:
         if args.address:
             set_default(geo['formatted_address'])
@@ -111,17 +124,10 @@ def main():
             print('No location specified')
             return
 
-    lat = geo['geometry']['location']['lat']
-    lng = geo['geometry']['location']['lng']
+    data = weather(geo['geometry']['location']['lat'],
+                   geo['geometry']['location']['lng'])
 
-    data = weather(lat, lng)
-
-    print()
-    print('Location : {}'.format(geo['formatted_address']))
-    print('Weather  : {}'.format(data['currently']['summary']))
-    print('Currently: {}\xb0C'.format(int(data['currently']['temperature'])))
-    print('Forecast : {}'.format(data['daily']['summary']))
-
+    show(geo, data)
 
 if __name__ == '__main__':
     main()
