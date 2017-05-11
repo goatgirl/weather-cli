@@ -18,6 +18,3 @@ class Weather(object):
             lng=location.longitude
         )
         return api_data.fetch(url)
-
-
-

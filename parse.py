@@ -46,7 +46,6 @@ def read(args):
     if args.address:
         location = Location(parse_address(args.address))
         if not location.address:
-            print('address not recognised')
             return
         address = location.address
     else:

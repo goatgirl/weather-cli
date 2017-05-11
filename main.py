@@ -1,7 +1,9 @@
-from location import Location
-from weather import Weather
 import display
 import parse
+import file
+
+from location import Location
+from weather import Weather
 
 
 def main():
@@ -15,4 +17,5 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    if file.exists('settings.py'):
+        main()

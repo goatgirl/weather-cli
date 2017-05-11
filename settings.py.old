@@ -1,8 +1,6 @@
-# Visit https://darksky.net/dev/ for an API key and add to weather key and uncomment
-
 config = {
     'location-url': 'https://maps.googleapis.com/maps/api/geocode/json?address={loc}',
-    'save-file': 'weather.sav',
     'weather-url': 'https://api.darksky.net/forecast/{key}/{lat},{lng}?units=uk2',
-    # 'weather-key': KEY HERE
+    'weather-key': 'b6c34ca9ff096d964aea287c83afc6c6',  # '<darksky-api-key>'
+    'save-file': 'weather.sav'
 }

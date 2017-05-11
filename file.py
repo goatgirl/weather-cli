@@ -16,3 +16,7 @@ def read(file):
 def save(file, data):
     with open(file, 'w') as f:
         f.write(str(data))
+
+
+def rename(old, new):
+    os.rename(old, new)
