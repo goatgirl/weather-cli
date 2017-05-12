@@ -1,6 +1,4 @@
 import argparse
-from config import Config
-from location import Location
 
 import file
 
@@ -43,20 +41,17 @@ def set():
     return parser.parse_args()
 
 
-def read(args):
-    config = Config()
+def read(args, config):
 
     if args.address:
-        print(args.address)
-        location = Location(parse_address(args.address))
-        print(location.address)
-        if not location.address:
+        address = parse_address(args.address)
+        if not address:
             return
-        address = location.address
     else:
-        data = file.read(config.save_file)
-        location = Location(data)
-        address = location.address
+        data = file.read_json(config.save_file)
+        if(data):
+            address = data['default_location']
+    return address
 
     if args.key:
         print("key", address)
@@ -84,5 +79,3 @@ def read(args):
         else:
             print('No location specified')
             return
-
-    return address
