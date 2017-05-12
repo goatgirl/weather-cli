@@ -1,5 +1,5 @@
-import config
 import api_data
+from config import Config
 
 
 class Location(object):
@@ -11,6 +11,7 @@ class Location(object):
         self.lookup(address)
 
     def lookup(self, address):
+        config = Config()
         url = config.location_url.format(loc=api_data.url_safe(address))
         data = api_data.fetch(url)
         if data['status'] == 'ZERO_RESULTS':

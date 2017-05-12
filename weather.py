@@ -1,5 +1,5 @@
-import config
 import api_data
+from config import Config
 
 
 class Weather(object):
@@ -12,6 +12,7 @@ class Weather(object):
 
     @staticmethod
     def lookup(location):
+        config = Config()
         url = config.weather_url.format(
             key=config.weather_key,
             lat=location.latitude,

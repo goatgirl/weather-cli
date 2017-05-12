@@ -1,7 +1,8 @@
 import argparse
-import config
-import file
+from config import Config
 from location import Location
+
+import file
 
 
 def parse_address(address):
@@ -18,6 +19,11 @@ def set():
         "address",
         help="The address, city or post code for the weather.",
         nargs='*', type=str)
+
+    parser.add_argument(
+        "-k", "--key",
+        help="saves API key from darksky.net",
+        action="store_true")
 
     parser.add_argument(
         "-l", "--list",
@@ -38,22 +44,28 @@ def set():
 
 
 def read(args):
-
-    if args.list:
-        print('Default location: {}'.format(file.read(config.save_file)))
-        return
+    config = Config()
 
     if args.address:
+        print(args.address)
         location = Location(parse_address(args.address))
+        print(location.address)
         if not location.address:
             return
         address = location.address
     else:
-        address = file.read(config.save_file)
-        if not address:
-            print("No default location set.")
-            print("Please run again and include a location.")
-            return
+        data = file.read(config.save_file)
+        location = Location(data)
+        address = location.address
+
+    if args.key:
+        print("key", address)
+        config.save_config(address)
+        return
+
+    if args.list:
+        print('Default location: {}'.format(file.read(config.save_file)))
+        return
 
     if args.default:
         if args.address:
