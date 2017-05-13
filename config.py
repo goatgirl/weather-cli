@@ -30,11 +30,11 @@ class Config(object):
             if data['default_location']:
                 self.default_location = data['default_location']
 
-    def save(self, key):
+    def save(self, key, location):
         if key:
             self.api_key = key
             data = {
                 'api_key': key,
-                'default_location': None
+                'default_location': location
             }
             file.save_json(self.save_file, data)

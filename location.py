@@ -3,14 +3,14 @@ import api_data
 
 class Location(object):
 
-    def __init__(self, address, config):
+    def __init__(self, address, location_url):
         self.address = None
         self.latitude = None
         self.longitude = None
-        self.lookup(address, config)
+        self.lookup(address, location_url)
 
-    def lookup(self, address, config):
-        url = config.location_url.format(loc=api_data.url_safe(address))
+    def lookup(self, address, location_url):
+        url = location_url.format(loc=api_data.url_safe(address))
         data = api_data.fetch(url)
         if data['status'] == 'ZERO_RESULTS':
             self.address = None

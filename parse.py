@@ -1,5 +1,4 @@
 import argparse
-
 import file
 
 
@@ -42,40 +41,53 @@ def set():
 
 
 def read(args, config):
+    address = None
+
+    if args.list:
+        if config.api_key:
+            print('Default location: {}'.format(file.read(config.save_file)))
+        return
+
+    if args.key:
+        if args.address:
+            key = [parse_address(args.address)]
+            loc = config.default_location
+            config.save(key[0], loc)
+            print('API key stored')
+            return
+        if config.api_key:
+            print("To change API, use: -k <api-key>")
+        return
 
     if args.address:
         address = parse_address(args.address)
         if not address:
             return
     else:
-        data = file.read_json(config.save_file)
-        if(data):
-            address = data['default_location']
-    return address
-
-    if args.key:
-        print("key", address)
-        config.save_config(address)
-        return
-
-    if args.list:
-        print('Default location: {}'.format(file.read(config.save_file)))
-        return
+        if file.exists(config.save_file):
+            data = file.read_json(config.save_file)
+            if(data):
+                address = data['default_location']
 
     if args.default:
         if args.address:
-            file.save(config.save_file, address)
+            key = config.api_key
+            loc = address
+            config.save(key, loc)
             print('Saving {} as default location'
                   .format(address))
-        else:
-            print('No location specified')
         return
 
     if args.save:
         if args.address:
-            file.save(config.save_file, address)
+            key = config.api_key
+            loc = address
+            config.save(key, loc)
             print('Saving {} as default location'
                   .format(address))
         else:
-            print('No location specified')
+            if config.api_key:
+                print('No location specified')
             return
+
+    return address
