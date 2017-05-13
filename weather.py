@@ -5,10 +5,10 @@ class Weather(object):
 
     def __init__(self, location, config):
         data = Weather.lookup(location, config)
-        self.summary = data['currently']['summary']
-        self.temperature = data['currently']['temperature']
-        self.forecast = data['daily']['summary']
-        self.icon = data['currently']['icon']
+        self.now = data['currently']
+        self.day = []
+        for i in range(2):
+            self.day.append(data['daily']['data'][i])
 
     @staticmethod
     def lookup(location, config):
@@ -18,4 +18,3 @@ class Weather(object):
             lng=location.longitude
         )
         return api_data.fetch(url)
-

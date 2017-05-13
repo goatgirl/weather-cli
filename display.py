@@ -1,7 +1,6 @@
 def show(location, weather):
-    print()
-    print('Location : {}'.format(location.address))
-    print('Weather  : {}'.format(weather.summary))
-    print('Currently: {}\xb0C'.format(int(weather.temperature)))
-    print('Forecast : {}'.format(weather.forecast))
-    print('icon     : {}'.format(weather.icon))
+    # print(weather.day[0])
+    print('\nNow:', weather.now['summary'], "{}\xb0C".format(
+        int(weather.now['temperature'])))
+    print('\nToday:', weather.day[0]['summary'])
+    print('\nTomorrow:', weather.day[1]['summary'])
