@@ -8,6 +8,7 @@ class Weather(object):
         self.summary = data['currently']['summary']
         self.temperature = data['currently']['temperature']
         self.forecast = data['daily']['summary']
+        self.icon = data['currently']['icon']
 
     @staticmethod
     def lookup(location, config):
